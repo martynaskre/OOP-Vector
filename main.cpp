@@ -10,7 +10,7 @@ int main() {
 
     std::cout << std::endl;
 
-    a.erase(a.begin(), a.begin() + 1);
+    a.insert(a.end(), 69);
 
     for (auto el: a) {
         std::cout << el << std::endl;

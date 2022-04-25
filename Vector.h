@@ -271,8 +271,24 @@ void Vector<T>::clear() {
 
 template<typename T>
 inline typename Vector<T>::iterator Vector<T>::insert(Vector::iterator position, T element) {
-    std::insert_iterator<T>(position, element);
-    return Vector::iterator();
+    if (position < begin() || position > end()) {
+        throw std::out_of_range("Out of range");
+    }
+
+    if (length + 1 > space) {
+        space *= 2;
+    }
+
+    T* new_array = new T[space];
+
+    iterator last = std::copy(begin(), position, new_array);
+    *last = element;
+    std::copy(position, end(), last + 1);
+
+    array = new_array;
+    length++;
+
+    return position;
 }
 
 template<typename T>
