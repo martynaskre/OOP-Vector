@@ -10,7 +10,7 @@ int main() {
 
     std::cout << std::endl;
 
-    a.erase(a.begin());
+    a.erase(a.begin(), a.begin() + 1);
 
     for (auto el: a) {
         std::cout << el << std::endl;

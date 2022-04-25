@@ -224,17 +224,17 @@ bool Vector<T>::empty() {
 }
 
 template<typename T>
-size_t Vector<T>::size() {
+typename Vector<T>::size_type Vector<T>::size() {
     return length;
 }
 
 template<typename T>
-size_t Vector<T>::max_size() {
-    return space;
+typename Vector<T>::size_type Vector<T>::max_size() {
+    return std::distance(begin(), end());
 }
 
 template<typename T>
-void Vector<T>::reserve(size_t new_capacity) {
+void Vector<T>::reserve(Vector<T>::size_type new_capacity) {
     if (new_capacity <= space) {
         return;
     }
@@ -297,7 +297,17 @@ inline typename Vector<T>::iterator Vector<T>::erase(Vector::iterator first) {
 
 template<typename T>
 inline typename Vector<T>::iterator Vector<T>::erase(Vector::iterator first, Vector::iterator last) {
-    return Vector::iterator();
+    if (last < first || first < begin() || last > end()) {
+        throw std::out_of_range("Out of range");
+    }
+
+    for (iterator i = first; i < end(); i++) {
+        *i = *(i + std::distance(first, last));
+    }
+
+    length -= std::distance(first, last);
+
+    return last;
 }
 
 template<typename T>
