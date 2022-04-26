@@ -51,11 +51,11 @@ public:
     reverse_iterator rend() noexcept;
     const_reverse_iterator rend() const noexcept;
 
-    bool empty();
-    size_type size();
-    size_type max_size();
+    bool empty() const;
+    size_type size() const;
+    size_type max_size() const;
     void reserve(size_type new_capacity);
-    size_type capacity();
+    size_type capacity() const;
     void shrink_to_fit();
 
     void clear();
@@ -68,6 +68,13 @@ public:
     void pop_back();
     void resize(size_type count);
     void swap(Vector<T> &other);
+
+    bool operator==(const Vector<T>& other) const;
+    bool operator!=(const Vector<T>& other) const;
+    bool operator<(const Vector<T>& other) const;
+    bool operator>(const Vector<T>& other) const;
+    bool operator>=(const Vector<T>& other) const;
+    bool operator<=(const Vector<T>& other) const;
 };
 
 template<typename T>
@@ -219,17 +226,17 @@ typename Vector<T>::const_reverse_iterator Vector<T>::rend() const noexcept {
 }
 
 template<typename T>
-bool Vector<T>::empty() {
+bool Vector<T>::empty() const {
     return length == 0;
 }
 
 template<typename T>
-typename Vector<T>::size_type Vector<T>::size() {
+typename Vector<T>::size_type Vector<T>::size() const {
     return length;
 }
 
 template<typename T>
-typename Vector<T>::size_type Vector<T>::max_size() {
+typename Vector<T>::size_type Vector<T>::max_size() const {
     return std::distance(begin(), end());
 }
 
@@ -248,7 +255,7 @@ void Vector<T>::reserve(Vector<T>::size_type new_capacity) {
 }
 
 template<typename T>
-size_t Vector<T>::capacity() {
+typename Vector<T>::size_type Vector<T>::capacity() const {
     return space;
 }
 
@@ -380,6 +387,70 @@ void Vector<T>::swap(Vector<T> &other) {
     temp = space;
     space = other.space;
     other.space = temp;
+}
+
+template<typename T>
+bool Vector<T>::operator==(const Vector<T> &other) const {
+    if (size() == other.size()) {
+        for (int i = 0; i < size(); i++) {
+            if (at(i) != other.at(i)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    return false;
+}
+
+template<typename T>
+bool Vector<T>::operator!=(const Vector<T> &other) const {
+    return !(*this == other);
+}
+
+template<typename T>
+bool Vector<T>::operator<(const Vector<T> &other) const {
+    size_type smaller_size = size();
+
+    if (size() < other.size()) {
+        smaller_size = other.size();
+    }
+
+    for (size_type i = 0; i < smaller_size; i++) {
+        if (at(i) != other[i]) {
+            return at(i) < other[i];
+        }
+    }
+
+    return size() < other.size();
+}
+
+template<typename T>
+bool Vector<T>::operator>(const Vector<T> &other) const {
+    size_type smaller_size = size();
+
+    if (size() < other.size()) {
+        smaller_size = other.size();
+    }
+
+    for (size_type i = 0; i < smaller_size; i++) {
+        if (at(i) != other[i]) {
+            return at(i) > other[i];
+        }
+    }
+
+    return size() < other.size();
+}
+
+template<typename T>
+bool Vector<T>::operator>=(const Vector<T> &other) const {
+    return !(*this < other);
+}
+
+template<typename T>
+bool Vector<T>::operator<=(const Vector<T> &other) const {
+    return !(*this > other);
 }
 
 
