@@ -11,7 +11,6 @@
 template<typename T>
 class Vector {
     typedef T value_type;
-    typedef std::allocator<T> allocator_type;
     typedef size_t size_type;
     typedef value_type& reference;
     typedef const value_type& const_reference;
@@ -20,12 +19,12 @@ class Vector {
     typedef std::reverse_iterator<iterator> reverse_iterator;
     typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
 
-    T *array;
+    iterator array;
     size_type space;
     size_type length;
 
 public:
-    explicit Vector(size_type n = 100);
+    explicit Vector(size_type n = 2);
     Vector(const Vector &vector);
     Vector(std::initializer_list<T> elements);
     Vector<T> &operator=(const Vector<T> &a);
@@ -60,11 +59,9 @@ public:
 
     void clear();
     iterator insert(iterator position, T element);
-    iterator emplace(iterator position, T element);
     iterator erase(iterator first);
     iterator erase(iterator first, iterator last);
     void push_back(T element);
-    void emplace_back(T element);
     void pop_back();
     void resize(size_type count);
     void swap(Vector<T> &other);
@@ -95,29 +92,24 @@ Vector<T>::Vector(std::initializer_list<T> elements)
 }
 
 template<typename T>
-Vector<T> &Vector<T>::operator=(const Vector<T> &a) {
-    if (this == &a) {
+Vector<T> &Vector<T>::operator=(const Vector<T> &other) {
+    if (this == other) {
         return *this;
     }
 
-    // Current Vector has enough space, so there is no need for new allocation
-    if (a.space <= space) {
-        for (int index = 0; index < a.length; ++index) {
-            array[index] = a.array[index];
-            length = a.length;
-            return *this;
-        }
+    if (other.space <= space) {
+        std::copy(other.begin(), other.end(), array);
+        length = other.length;
+
+        return *this;
     }
 
-    T *p = new T[a.length];
+    array = new T[other.space];
 
-    for (int index = 0; index < a.length; ++index)
-        p[index] = a.array[index];
+    std::copy(other.begin(), other.end(), array);
 
-    delete[] array;
-    length = a.length;
-    space = a.space;
-    array = p;
+    length = other.length;
+    space = other.space;
 
     return *this;
 }
@@ -128,7 +120,7 @@ Vector<T>::~Vector() {
 }
 
 template<typename T>
-typename Vector<T>::reference Vector<T>::at(size_t position) {
+typename Vector<T>::reference Vector<T>::at(Vector::size_type position) {
     if (position > length - 1) {
         throw std::out_of_range("Out of range");
     }
@@ -261,7 +253,7 @@ typename Vector<T>::size_type Vector<T>::capacity() const {
 
 template<typename T>
 void Vector<T>::shrink_to_fit() {
-    T* new_array = new T(length);
+    iterator new_array = new T(length);
 
     std::copy(begin(), end(), new_array);
 
@@ -272,7 +264,8 @@ void Vector<T>::shrink_to_fit() {
 template<typename T>
 void Vector<T>::clear() {
     delete[] array;
-    array = new T[0];
+    space = 2;
+    array = new T[space];
     length = 0;
 }
 
@@ -296,11 +289,6 @@ inline typename Vector<T>::iterator Vector<T>::insert(Vector::iterator position,
     length++;
 
     return position;
-}
-
-template<typename T>
-inline typename Vector<T>::iterator Vector<T>::emplace(Vector::iterator position, T element) {
-    return Vector::iterator();
 }
 
 template<typename T>
@@ -337,17 +325,12 @@ template<typename T>
 void Vector<T>::push_back(T element) {
     if (length == space) {
         T *old = array;
-        array = new T[space = space * 2];
+        array = new T[space *= 2];
         std::copy(old, old + length, array);
         delete[] old;
     }
 
     array[length++] = element;
-}
-
-template<typename T>
-void Vector<T>::emplace_back(T element) {
-
 }
 
 template<typename T>
