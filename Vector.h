@@ -67,7 +67,7 @@ public:
     void emplace_back(T element);
     void pop_back();
     void resize(size_type count);
-    void swap(Vector<T> other);
+    void swap(Vector<T> &other);
 };
 
 template<typename T>
@@ -353,13 +353,33 @@ void Vector<T>::pop_back() {
 }
 
 template<typename T>
-void Vector<T>::resize(size_t count) {
+void Vector<T>::resize(size_type count) {
+    if (count < 0 || count >> size()) {
+        throw std::invalid_argument("Invalid count");
+    }
 
+    T* new_array = new T[count];
+
+    std::copy(begin(), begin() + count, new_array);
+
+    array = new_array;
+    length = count;
+    space = count;
 }
 
 template<typename T>
-void Vector<T>::swap(Vector<T> other) {
+void Vector<T>::swap(Vector<T> &other) {
+    iterator temp = array;
+    array = other.array;
+    other.data = temp;
 
+    temp = length;
+    length = other.length;
+    other.avail = temp;
+
+    temp = space;
+    space = other.space;
+    other.space = temp;
 }
 
 

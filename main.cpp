@@ -1,20 +1,50 @@
 #include <iostream>
 #include "Vector.h"
+#include <vector>
 
-int main() {
-    Vector<int> a = { 1, 2, 3, 4};
+void testVector() {
+    Vector<int> a = { 1, 2, 3, 4 };
+
+    std::cout << "size: " << a.size() << ", capacity: " << a.capacity() << std::endl;
 
     for (auto el: a) {
         std::cout << el << std::endl;
     }
+
+    a.resize(6);
+
+    std::cout << "size: " << a.size() << ", capacity: " << a.capacity() << std::endl;
 
     std::cout << std::endl;
 
-    a.insert(a.end(), 69);
-
     for (auto el: a) {
         std::cout << el << std::endl;
     }
+}
+
+void testRealVector()
+{
+    std::vector<int> b = { 1, 2, 3, 4 };
+
+    std::cout << "size: " << b.size() << ", capacity: " << b.capacity() << std::endl;
+
+    for (auto el: b) {
+        std::cout << el << std::endl;
+    }
+
+    b.resize(6);
+
+    std::cout << "size: " << b.size() << ", capacity: " << b.capacity() << std::endl;
+
+    std::cout << std::endl;
+
+    for (auto el: b) {
+        std::cout << el << std::endl;
+    }
+}
+
+int main() {
+    testRealVector();
 
     return 0;
 }
