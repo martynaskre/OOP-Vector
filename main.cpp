@@ -8,14 +8,6 @@ template <typename T>
 void performBenchmark();
 
 int main() {
-//    Vector<int> object;
-//
-//    for (int i = 1; i <= 100000000; i++) {
-//        object.push_back(i);
-//    }
-//
-//    std::cout << *(object.end() - 1) << std::endl;
-
     std::cout << "Custom vector benchmark:" << std::endl;
     performBenchmark<Vector<int>>();
 
