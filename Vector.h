@@ -75,7 +75,7 @@ public:
 };
 
 template<typename T>
-Vector<T>::Vector(size_t n)
+Vector<T>::Vector(size_type n)
         : space(n), array(new T[n]), length(0) {
 }
 
@@ -87,8 +87,8 @@ inline Vector<T>::Vector(const Vector &vector)
 
 template<typename T>
 Vector<T>::Vector(std::initializer_list<T> elements)
-        : space(elements.size()), length(elements.size()), array(new T(elements.size())) {
-    std::copy(elements.begin(), elements.end(), array);
+        : space(elements.size()), length(elements.size()), array(new T[elements.size()]) {
+    std::uninitialized_copy(elements.begin(), elements.end(), array);
 }
 
 template<typename T>
