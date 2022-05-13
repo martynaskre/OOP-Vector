@@ -27,7 +27,7 @@ public:
     explicit Vector(size_type n = 2);
     Vector(const Vector &vector);
     Vector(std::initializer_list<T> elements);
-    Vector<T> &operator=(const Vector<T> &a);
+    Vector<T> &operator=(const Vector<T> &other);
     ~Vector();
 
     reference at(size_type position);
@@ -59,6 +59,7 @@ public:
 
     void clear();
     iterator insert(iterator position, T element);
+    iterator insert(iterator position, iterator first, iterator last);
     iterator erase(iterator first);
     iterator erase(iterator first, iterator last);
     void push_back(T element);
@@ -292,14 +293,50 @@ inline typename Vector<T>::iterator Vector<T>::insert(Vector::iterator position,
 }
 
 template<typename T>
+inline typename Vector<T>::iterator Vector<T>::insert(Vector::iterator position, Vector::iterator first, Vector::iterator last) {
+    if (position < begin() || position > end()) {
+        throw std::out_of_range("Out of range");
+    }
+
+    int count = last - first;
+    const auto index = position - begin();
+
+    if (size() + count > capacity()) {
+        T* new_array = new T[size() + count];
+
+        std::copy(begin(), end(), new_array);
+
+        array = new_array;
+        space = size() + count;
+    }
+
+    iterator it = &array[index];
+
+    std::move(it, end(), it + count);
+    std::copy(first, last, it);
+
+    length += count;
+
+    return it;
+}
+
+template<typename T>
 inline typename Vector<T>::iterator Vector<T>::erase(Vector::iterator first) {
     if (first > end() || first < begin()) {
         throw std::out_of_range("Out of range");
     }
 
-    for (iterator i = first; i < end(); i++) {
-        *i = *(i + 1);
+    auto distance = std::distance(begin(), first);
+
+    T* new_array = new T[space];
+
+    std::copy(begin(), first, new_array);
+
+    if (first != end()) {
+        std::copy(first + 1, end(), new_array + distance);
     }
+
+    array = new_array;
 
     length--;
 
@@ -312,9 +349,12 @@ inline typename Vector<T>::iterator Vector<T>::erase(Vector::iterator first, Vec
         throw std::out_of_range("Out of range");
     }
 
-    for (iterator i = first; i < end(); i++) {
-        *i = *(i + std::distance(first, last));
-    }
+    T* new_array = new T[space];
+
+    std::copy(begin(), first, new_array);
+    std::copy(last, end(), new_array);
+
+    array = new_array;
 
     length -= std::distance(first, last);
 
